@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Estimador de Aluguel</title>
+    <style>
+        body { font-family: sans-serif; padding: 50px; background: #f4f4f4; }
+        .card { background: white; padding: 20px; border-radius: 8px; max-width: 400px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Estimar Aluguel</h2>
+    <label>Valor do Imóvel (R$):</label>
+    <input type="text" id="valorImovel" placeholder="Ex: 500.000" oninput="formatarMoeda(this)">
+    <button onclick="estimarAluguel()">Calcular Estimativa</button>
+    <h3 id="resultado"></h3>
+</div>
+
+<script>
+    // 1. Função que formata enquanto o usuário digita
+function formatarMoeda(input) {
+    let valor = input.value;
+    // Remove tudo o que não é número
+    valor = valor.replace(/\D/g, "");
+
+    if (valor === "") {
+        input.value = "";
+        return;
+    }
+
+    // Formata com separadores de milhar brasileiros
+    // Exemplo: "500.000" vira "500000"
+    valor = new Intl.NumberFormat('pt-BR').format(valor);
+    input.value = valor;
+}
+
+// 2. Função principal que chama a API Java
+async function estimarAluguel() {
+    const campo = document.getElementById('valorImovel');
+    const display = document.getElementById('resultado');
+
+    // Remove os pontos (.) para que o Java receba um número puro
+    // Exemplo: "500.000" vira "500000"
+    const valorLimpo = campo.value.replace(/\./g, "");
+    const valorNumerico = parseFloat(valorLimpo);
+
+    // Validação para evitar campos vazios
+    if (isNaN(valorNumerico) || valorNumerico <= 0) {
+        display.innerText = "Por favor, digite um valor válido.";
+        display.style.color = "red";
+        return;
+    }
+
+    display.innerText = "Calculando...";
+    display.style.color = "black";
+
+    try {
+        const response = await fetch('/api/aluguel/calcular', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                valorImovel: valorNumerico
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Erro na resposta do servidor");
+        }
+
+        const dados = await response.json();
+
+        // Exibe o resultado formatado de volta para o usuário
+        display.innerText = `Estimativa: R$ ${dados.estimativa.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+        display.style.color = "#28a745"; // Cor verde para sinalizar sucesso
+
+    } catch (erro) {
+        console.error("Erro na requisição:", erro);
+        display.innerText = "Erro ao conectar com o servidor Java.";
+        display.style.color = "red";
+    }
+}
+</script>
+
+</body>
+</html>
