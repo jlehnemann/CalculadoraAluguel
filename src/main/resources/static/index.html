@@ -16,14 +16,14 @@
     <h2>Estimar Aluguel</h2>
     <label>Valor do Imóvel (R$):</label>
     <label for="valorImovel"></label><input type="text" id="valorImovel" placeholder="Ex: 500.000" oninput="formatarMoeda(this)">
+    <div style="margin: 15px 0; display: flex; align-items: center; gap: 10px;">
+        <input type="checkbox" id="imovelMobiliado" style="width: auto; margin: 0;">
+        <label for="imovelMobiliado">O imóvel é mobiliado? (+30%)</label>
+    </div>
     <button onclick="estimarAluguel()">Calcular Estimativa</button>
     <h3 id="resultado"></h3>
 </div>
 
-<div style="margin: 15px 0; display: flex; align-items: center; gap: 10px;">
-    <input type="checkbox" id="imovelMobiliado" style="width: auto; margin: 0;">
-    <label for="imovelMobiliado">O imóvel é mobiliado? (+30%)</label>
-</div>
 
 <script>
     // 1. Função que formata enquanto o usuário digita
