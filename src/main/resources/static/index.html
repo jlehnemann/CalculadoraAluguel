@@ -15,9 +15,14 @@
 <div class="card">
     <h2>Estimar Aluguel</h2>
     <label>Valor do Imóvel (R$):</label>
-    <input type="text" id="valorImovel" placeholder="Ex: 500.000" oninput="formatarMoeda(this)">
+    <label for="valorImovel"></label><input type="text" id="valorImovel" placeholder="Ex: 500.000" oninput="formatarMoeda(this)">
     <button onclick="estimarAluguel()">Calcular Estimativa</button>
     <h3 id="resultado"></h3>
+</div>
+
+<div style="margin: 15px 0; display: flex; align-items: center; gap: 10px;">
+    <input type="checkbox" id="imovelMobiliado" style="width: auto; margin: 0;">
+    <label for="imovelMobiliado">O imóvel é mobiliado? (+30%)</label>
 </div>
 
 <script>
@@ -41,6 +46,7 @@ function formatarMoeda(input) {
 // 2. Função principal que chama a API Java
 async function estimarAluguel() {
     const campo = document.getElementById('valorImovel');
+    const checkboxMobiliado = document.getElementById('imovelMobiliado');
     const display = document.getElementById('resultado');
 
     // Remove os pontos (.) para que o Java receba um número puro
@@ -65,7 +71,8 @@ async function estimarAluguel() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                valorImovel: valorNumerico
+                valorImovel: valorNumerico,
+                mobiliado: checkboxMobiliado.checked
             })
         });
 
