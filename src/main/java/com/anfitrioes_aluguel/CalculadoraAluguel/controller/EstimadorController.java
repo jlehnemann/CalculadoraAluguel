@@ -15,7 +15,6 @@ public class EstimadorController {
     @PostMapping("/calcular")
     public ResponseEntity<Map<String, Double>> calcular(@RequestBody ImovelRequest dados) {
 
-        // Agora você acessa os dados de forma elegante com métodos
         double valorBase = dados.getValorImovel() * 0.005;
 
         double estimativaFinal = (dados.getMobiliado() != null && dados.getMobiliado())
